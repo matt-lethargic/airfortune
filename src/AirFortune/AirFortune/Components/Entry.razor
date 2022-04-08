@@ -1,0 +1,20 @@
+﻿@using AirFortune.Models
+@if (CompetitionEntry != null)
+{
+    <li class="@(CompetitionEntry.Selected? "selected" : "")" style="background-color: @Colour;">
+        <span class="name">@CompetitionEntry.Name</span>
+    </li>
+}
+@code {
+    [Parameter]
+    public CompetitionEntry? CompetitionEntry { get; set; }
+
+    protected string Colour { get; private set; }
+
+
+    protected override void OnInitialized()
+    {
+        var random = new Random();
+        Colour = $"#{random.Next(0x1000000):X6}";
+    }
+}

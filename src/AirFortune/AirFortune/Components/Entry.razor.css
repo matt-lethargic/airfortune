@@ -1,0 +1,15 @@
+﻿li {
+    display: inline-block;
+    vertical-align: top;
+    padding: 20px;
+    margin: 5px;
+}
+
+    li.selected {
+        transform: scale(3);
+    }
+
+    li span.name {
+        color: #ffffff;
+        text-shadow: 1px 1px #000;
+    }

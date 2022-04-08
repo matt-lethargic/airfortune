@@ -1,0 +1,74 @@
+﻿@using AirFortune.Models
+<div class="controls">
+    @if (Competition is {Running: false })
+    {
+        <p>
+            <button type="submit" @onclick="@(async (e) => await OnRollAsync(e))" class="btn btn-success">Start!</button>
+            <button type="button" @onclick="@(async (e) => await OnReset(e))" class="btn btn-danger">Reset</button>
+        </p>
+    }
+</div>
+
+<div class="competition">
+    <div class="entrants">
+        <ul>
+            @if (Competition != null)
+            {
+                foreach (var entrant in Competition.Entries)
+                {
+                    <Entry CompetitionEntry="@entrant"></Entry>
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public CompetitionEntry[] Entries { get; set; } = Array.Empty<CompetitionEntry>();
+
+    public Competition? Competition { get; private set; }
+
+    protected override void OnParametersSet()
+    {
+        Competition = new Competition(Entries);
+
+        Competition.OnStartAsync += async () =>
+        {
+            StateHasChanged();
+            await Task.CompletedTask;
+        };
+        Competition.OnFinishAsync += async () =>
+        {
+            StateHasChanged();
+            await Task.CompletedTask;
+        };
+        Competition.OnNumberChangedAsync += async () =>
+        {
+            for (var index = 0; index <= Competition.Entries.GetUpperBound(0); index++)
+            {
+                if (index == Competition.CurrentNumberIndex)
+                {
+                    Competition.Entries[index].Selected = true;
+                }
+                else
+                {
+                    Competition.Entries[index].Selected = false;
+                }
+            }
+            StateHasChanged();
+            await Task.CompletedTask;
+        };
+    }
+
+    public async Task OnRollAsync(MouseEventArgs mouseEventArgs)
+    {
+        await Competition.RollTheBallAsync();
+    }
+
+    public async Task OnReset(MouseEventArgs mouseEventArgs)
+    {
+        await Competition.Reset();
+    }
+}

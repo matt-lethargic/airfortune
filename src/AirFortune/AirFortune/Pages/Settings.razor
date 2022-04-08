@@ -1,0 +1,95 @@
+﻿@page "/settings"
+@using AirFortune.Models
+@using Blazored.LocalStorage
+@inject ILocalStorageService _localStorage
+
+<h1>Settings</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-xxl-6">
+            <div class="shadow p-3 mb-5 rounded">
+                <h2>Airtable</h2>
+                <EditForm Model=@_settingsModel OnSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+
+                    <p>
+                        <label for="apikey">API Key:</label>
+                        <InputText id="apikey" class="form-control" @bind-Value="_settingsModel.ApiKey" />
+                    </p>
+
+                    <ValidationSummary />
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-xxl-6">
+            <div class="shadow p-3 mb-5 rounded">
+                <h2>Tables</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Base Id</th>
+                            <th scope="col">Table</th>
+                            <th scope="col">First Name Field</th>
+                            <th scope="col">Last Name Field</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var table in _tables)
+                        {
+                            <tr>
+                                <td scope="row">@table.BaseId</td>
+                                <td>@table.Name</td>
+                                <td>@table.FirstNameField</td>
+                                <td>@table.LastNameField</td>
+                                <td><button class="btn oi oi-trash" @onclick="@(async e => await DeleteTable(e, table))"></button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <button class="btn btn-success" @onclick="() => AddTableModal.Open()">Add Table</button>
+            </div>
+        </div>
+    </div>
+
+    <AddTableModal @ref="AddTableModal" ApiKey="@_settingsModel.ApiKey" OnSave="@AddTable"></AddTableModal>
+</div>
+
+@code
+{
+    private AddTableModal? AddTableModal { get; set; }
+    private List<AirFortuneTable> _tables = new();
+
+    private readonly AirFortuneSettings _settingsModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _settingsModel.ApiKey = await _localStorage.GetItemAsync<string>("apikey");
+        _tables = await _localStorage.GetItemAsync<List<AirFortuneTable>>("tables")
+                 ?? new List<AirFortuneTable>();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await _localStorage.SetItemAsync("apikey", _settingsModel.ApiKey);
+    }
+
+    private async Task AddTable(AirFortuneTable table)
+    {
+        _tables.Add(table);
+        await _localStorage.SetItemAsync("tables", _tables);
+    }
+
+    private async Task DeleteTable(MouseEventArgs args, AirFortuneTable table)
+    {
+        _tables.Remove(table);
+        await _localStorage.SetItemAsync("tables", _tables);
+    }
+
+}

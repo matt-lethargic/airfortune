@@ -1,0 +1,129 @@
+﻿@using Microsoft.AspNetCore.Components
+@using AirFortune.Models
+@using AirFortune.Services
+@using System.Security.Cryptography.X509Certificates
+@inject AirtableService _airtableService
+
+<div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay; overflow-y: auto;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <EditForm EditContext="@_editContext" OnValidSubmit="@HandleValidSubmit">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <DataAnnotationsValidator />
+                    <p>
+                        <label for="baseId">Base Id</label>
+                        <InputText id="baseId" @bind-Value="_addTable.BaseId" />
+                    </p>
+
+                    <p>
+                        <label for="name">Name</label>
+                        <InputText id="name" @bind-Value="_addTable.Name" />
+                    </p>
+
+                    <p>
+                        <label for="firstNameField">First Name Field</label>
+                        <InputText id="firstNameField" @bind-Value="_addTable.FirstNameField" />
+                    </p>
+
+                    <p>
+                        <label for="lastNameField">Last Name Field</label>
+                        <InputText id="lastNameField" @bind-Value="_addTable.LastNameField" />
+                    </p>
+
+                    <ValidationSummary />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="Close">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string ApiKey { get; set; }
+
+    [Parameter]
+    public EventCallback<AirFortuneTable> OnSave { get; set; }
+
+    private static AddTable _addTable = new();
+    private EditContext? _editContext;
+    private ValidationMessageStore? _messageStore;
+
+    public Guid Guid = Guid.NewGuid();
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(_addTable);
+        _editContext.OnValidationRequested += HandleValidationRequested;
+        _messageStore = new(_editContext);
+    }
+
+    public void Open()
+    {
+        ModalDisplay = "block;";
+        ModalClass = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ModalDisplay = "none";
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+
+    public void Clear()
+    {
+        _addTable = new();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        AirFortuneTable table = new AirFortuneTable
+            {
+                BaseId = _addTable.BaseId,
+                Name = _addTable.Name,
+                FirstNameField = _addTable.FirstNameField,
+                LastNameField = _addTable.LastNameField
+            };
+
+        await OnSave.InvokeAsync(table);
+
+        Clear();
+        Close();
+    }
+
+    private async void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        _messageStore?.Clear();
+
+
+        var validationResponse = await _airtableService.ValidateTable(ApiKey, _addTable.BaseId, _addTable.Name, _addTable.FirstNameField, _addTable.LastNameField);
+        if (!validationResponse.Valid)
+        {
+            foreach (var error in validationResponse.Errors)
+            {
+                _messageStore.Add(_editContext.Field(error.Key), error.Value);
+            }
+            _editContext.NotifyValidationStateChanged();
+        }
+    }
+}
