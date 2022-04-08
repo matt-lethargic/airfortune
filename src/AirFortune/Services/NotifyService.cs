@@ -4,10 +4,16 @@ namespace AirFortune.Services;
 
 public class NotifyService: INotifyService
 {
-    public void ChangeTable(AirFortuneTable table)
+    public void SelectTable(AirFortuneTable table)
     {
-        TableChanged?.Invoke(this, table);
+        TableSelected?.Invoke(this, table);
     }
 
-    public event EventHandler<AirFortuneTable>? TableChanged;
+    public void UpdateTables()
+    {
+        TablesUpdated?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler<AirFortuneTable>? TableSelected;
+    public event EventHandler? TablesUpdated;
 }

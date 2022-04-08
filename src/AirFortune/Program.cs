@@ -13,5 +13,4 @@ builder.Services.AddScoped<IAirtableService, AirtableService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddSingleton<INotifyService, NotifyService>();
 builder.Services.AddBlazoredLocalStorage();
-
 await builder.Build().RunAsync();

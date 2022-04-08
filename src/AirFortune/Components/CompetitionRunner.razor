@@ -1,6 +1,8 @@
 ﻿@using AirFortune.Models
 <div class="controls">
-    @if (Competition is { Running: false })
+    @if (Competition != null 
+        && Competition.Entries.Length > 0
+         && Competition.Running == false)
     {
         <p>
             <button type="submit" @onclick="@(async (e) => await OnRollAsync(e))" class="btn btn-success">Start!</button>

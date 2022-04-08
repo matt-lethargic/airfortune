@@ -1,0 +1,41 @@
+﻿@using AirFortune.Models
+@using AirFortune.Services
+@inject INotifyService _notifyService
+@inject ITableService _tableService
+<Dropdown TItem="AirFortuneTable" OnSelected="OnTableSelect">
+    <InitialTip>Select table...</InitialTip>
+    <ChildContent>
+        @if (_tables != null)
+        {
+            foreach (var table in _tables)
+            {
+                <DropdownListItem Item="@table">@table.Name</DropdownListItem>
+            }
+        }
+    </ChildContent>
+</Dropdown>
+@code {
+    private IEnumerable<AirFortuneTable>? _tables;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTables();
+        _notifyService.TablesUpdated += TablesUpdated;
+    }
+
+    protected void OnTableSelect(AirFortuneTable table)
+    {
+        _notifyService.SelectTable(table);
+    }
+
+    private async Task LoadTables()
+    {
+        _tables = await _tableService.GetTables();
+    }
+
+    private async void TablesUpdated(object? sender, EventArgs args)
+    {
+        await LoadTables();
+        StateHasChanged();
+    }
+}

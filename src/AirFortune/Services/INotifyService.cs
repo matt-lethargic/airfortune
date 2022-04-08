@@ -4,6 +4,8 @@ namespace AirFortune.Services;
 
 public interface INotifyService
 {
-    void ChangeTable(AirFortuneTable table);
-    event EventHandler<AirFortuneTable>? TableChanged;
+    void SelectTable(AirFortuneTable table);
+    void UpdateTables();
+    event EventHandler<AirFortuneTable>? TableSelected;
+    event EventHandler? TablesUpdated;
 }

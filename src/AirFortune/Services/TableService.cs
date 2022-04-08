@@ -26,7 +26,7 @@ namespace AirFortune.Services
         public void ChangeTable(AirFortuneTable table)
         {
             _selectedTable = table;
-            _notifyService.ChangeTable(table);
+            _notifyService.SelectTable(table);
         }
         
     }
