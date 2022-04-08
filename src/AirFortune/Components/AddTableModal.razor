@@ -2,7 +2,7 @@
 @using AirFortune.Models
 @using AirFortune.Services
 @using System.Security.Cryptography.X509Certificates
-@inject AirtableService _airtableService
+@inject IAirtableService _airtableService
 
 <div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay; overflow-y: auto;">
     <div class="modal-dialog">

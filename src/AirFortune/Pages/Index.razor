@@ -2,32 +2,18 @@
 @using AirFortune.Services
 @using AirFortune.Models
 @using Blazored.LocalStorage
-@inject AirtableService _airtableService
+@inject IAirtableService _airtableService
 @inject ILocalStorageService _localStorage
+@inject INotifyService _notifyService
 
 <div class="container-fluid">
+
     <div class="row">
-        <div class="col-12 col-xxl-6">
-            <div class="shadow p-3 mb-5 rounded">
-                <Dropdown TItem="AirFortuneTable" OnSelected="OnTableSelect">
-                    <InitialTip>Select table...</InitialTip>
-                    <ChildContent>
-                        @foreach (var table in _tables)
-                        {
-                            <DropdownListItem Item="@table">@table.Name</DropdownListItem>
-                        }
-                    </ChildContent>
-                </Dropdown>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col">
+        <div class="col-12">
             <CompetitionRunner Entries="@Entries"></CompetitionRunner>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col">
             @error
@@ -39,23 +25,21 @@
 @code
 {
     private string error = string.Empty;
-
     private string _apiKey = string.Empty;
-    private List<AirFortuneTable> _tables = new();
 
     public CompetitionEntry[] Entries = Array.Empty<CompetitionEntry>();
 
     protected override async Task OnInitializedAsync()
     {
         _apiKey = await _localStorage.GetItemAsync<string>("apikey");
-        _tables = await _localStorage.GetItemAsync<List<AirFortuneTable>>("tables");
+        _notifyService.TableChanged += OnTableSelect;
     }
 
-    private async Task OnTableSelect(AirFortuneTable table)
+    private async void OnTableSelect(object? sender, AirFortuneTable table)
     {
         try
         {
-            var names = await _airtableService.GetNamesAsync(_apiKey, 
+            var names = await _airtableService.GetNamesAsync(_apiKey,
                 table.BaseId, table.Name, table.FirstNameField, table.LastNameField);
             if (names != null)
             {
@@ -66,5 +50,7 @@
         {
             error = ex.Message;
         }
+
+        StateHasChanged();
     }
 }

@@ -15,7 +15,16 @@ namespace AirFortune.Services
         }
     }
 
-    public class AirtableService
+    public interface IAirtableService
+    {
+        Task<AirtableValidationResponse> ValidateTable(string apiKey, string baseId, string tableName, 
+            string firstNameField, string lastNameField);
+
+        Task<IEnumerable<string>?> GetNamesAsync(string apiKey, string baseId, string tableName, 
+            string firstNameField, string lastNameField);
+    }
+
+    public class AirtableService : IAirtableService
     {
         public async Task<AirtableValidationResponse> ValidateTable(string apiKey, string baseId, string tableName, 
             string firstNameField, string lastNameField)

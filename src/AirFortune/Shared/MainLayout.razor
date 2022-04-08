@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using AirFortune.Models
+@using AirFortune.Services
+@inherits LayoutComponentBase
+@inject INotifyService _notifyService
+@inject ITableService _tableService
 
 <div class="page">
     <div class="sidebar">
@@ -7,7 +11,18 @@
 
     <main>
         <div class="top-row px-4">
-            
+            <Dropdown TItem="AirFortuneTable" OnSelected="OnTableSelect">
+                <InitialTip>Select table...</InitialTip>
+                <ChildContent>
+                    @if (_tables != null)
+                    {
+                        foreach (var table in _tables)
+                        {
+                            <DropdownListItem Item="@table">@table.Name</DropdownListItem>
+                        }
+                    }
+                </ChildContent>
+            </Dropdown>
         </div>
 
         <article class="content px-4">
@@ -15,3 +30,18 @@
         </article>
     </main>
 </div>
+
+@code
+{
+    private IEnumerable<AirFortuneTable>? _tables;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tables = await _tableService.GetTables();
+    }
+
+    protected void OnTableSelect(AirFortuneTable table)
+    {
+        _notifyService.ChangeTable(table);
+    }
+}

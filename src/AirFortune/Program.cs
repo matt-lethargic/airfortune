@@ -9,7 +9,9 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddScoped<AirtableService>();
+builder.Services.AddScoped<IAirtableService, AirtableService>();
+builder.Services.AddScoped<ITableService, TableService>();
+builder.Services.AddSingleton<INotifyService, NotifyService>();
 builder.Services.AddBlazoredLocalStorage();
 
 await builder.Build().RunAsync();
