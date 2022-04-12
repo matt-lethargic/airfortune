@@ -1,7 +1,12 @@
 ﻿@page "/settings"
 @using AirFortune.Models
 @using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
 @inject ILocalStorageService _localStorage
+@inject HttpClient _http
 
 <h1>Settings</h1>
 
@@ -58,6 +63,14 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12 col-xxl-6">
+            <div class="shadow p-3 mb-5 rounded">
+                "@_quote"
+            </div>
+        </div>
+    </div>
+
     <AddTableModal @ref="AddTableModal" ApiKey="@_settingsModel.ApiKey" OnSave="@AddTable"></AddTableModal>
 </div>
 
@@ -65,11 +78,15 @@
 {
     private AddTableModal? AddTableModal { get; set; }
     private List<AirFortuneTable> _tables = new();
+    private string _quote = "loading quote...";
 
     private readonly AirFortuneSettings _settingsModel = new();
 
     protected override async Task OnInitializedAsync()
     {
+        var response = await _http.GetStreamAsync("/api/message");
+        _quote = response.ToString();
+
         _settingsModel.ApiKey = await _localStorage.GetItemAsync<string>("apikey");
         _tables = await _localStorage.GetItemAsync<List<AirFortuneTable>>("tables")
                  ?? new List<AirFortuneTable>();

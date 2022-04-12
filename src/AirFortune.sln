@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFortune", "AirFortune\Ai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFortune.Airtable", "AirFortune.Airtable\AirFortune.Airtable.csproj", "{5E899AC0-2C62-4830-B3E9-8F3778D3726B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirFortune.Api", "AirFortune.Api\AirFortune.Api.csproj", "{FF69FC36-71B7-40EA-AEAC-944B70F74BAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFortune.Api", "AirFortune.Api\AirFortune.Api.csproj", "{FF69FC36-71B7-40EA-AEAC-944B70F74BAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

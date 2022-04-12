@@ -9,61 +9,11 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-12">
-            @if (_loading)
-            {
-                <img src="images/loading-cat-tail.gif" />
-            }
-            else
-            {
-                <CompetitionRunner Entries="@Entries"></CompetitionRunner>
-            }
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            @_error
-        </div>
+        <h1>Hi</h1>
     </div>
 </div>
 
 @code
 {
-    private string _error = string.Empty;
-    private string _apiKey = string.Empty;
-    private bool _loading = false;
-
-    public CompetitionEntry[] Entries = Array.Empty<CompetitionEntry>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        _apiKey = await _localStorage.GetItemAsync<string>("apikey");
-        _notifyService.TableSelected += OnTableSelect;
-    }
-
-    private async void OnTableSelect(object? sender, AirFortuneTable table)
-    {
-        try
-        {
-            _loading = true;
-            StateHasChanged();
-            var names = await _airtableService.GetNamesAsync(_apiKey,
-                table.BaseId, table.Name, table.FirstNameField, table.LastNameField);
-            if (names != null)
-            {
-                Entries = names.Select(x => new CompetitionEntry(x)).ToArray();
-            }
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-        }
-        finally
-        {
-            _loading = false;
-        }
-
-        StateHasChanged();
-    }
+    
 }
