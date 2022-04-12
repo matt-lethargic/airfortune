@@ -26,6 +26,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "src/AirFortune"
+          api_location: "src/AirFortune.Api"
           output_location: "wwwroot"
 
   close_pull_request_job:
